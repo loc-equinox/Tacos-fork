@@ -26,7 +26,7 @@ RUN rm -rf qemu-${QEMU_VERSION} qemu-${QEMU_VERSION}.tar.xz
 # Install Rust
 # - https://www.rust-lang.org/tools/install
 
-ARG RUST_VERSION=1.70
+ARG RUST_VERSION=1.92
 ENV RUSTUP_HOME=/usr/local/rustup \
     CARGO_HOME=/usr/local/cargo \
     PATH=/usr/local/cargo/bin:$PATH
@@ -42,6 +42,10 @@ RUN cargo install cargo-binutils --vers ~0.2 && \
 
 RUN rustup component add clippy rustfmt
 
+# Add Tsinghua Cargo mirror
+RUN echo 'export RUSTUP_DIST_SERVER=https://mirrors.tuna.tsinghua.edu.cn/rustup' >> ~/.bashrc
+RUN echo 'export RUSTUP_UPDATE_ROOT=https://mirrors.tuna.tsinghua.edu.cn/rustup/rustup' >> ~/.bashrc
+
 # Make GDB easier
 RUN mkdir -p ~/.config/gdb
 RUN echo "add-auto-load-safe-path /" > ~/.config/gdb/gdbinit
@@ -49,3 +53,6 @@ RUN echo "add-auto-load-safe-path /" > ~/.config/gdb/gdbinit
 # Use tacos as the runner
 COPY tacos /usr/bin
 RUN chmod +x /usr/bin/tacos
+
+RUN apt-get install -y python3-pip
+RUN pip3 install requests typing
